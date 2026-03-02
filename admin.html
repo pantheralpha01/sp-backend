@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP Products Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+        
+        .upload-area:hover {
+            background: #eff2ff;
+            border-color: #764ba2;
+        }
+        
+        .upload-area.dragover {
+            background: #e8ebff;
+            border-color: #667eea;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            display: none;
+        }
+        
+        .file-name.show {
+            display: block;
+        }
+        
+        .progress {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .progress.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loading {
+            0%, 100% { width: 0%; }
+            50% { width: 100%; }
+        }
+        
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .info-box p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .upload-area {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 SP Products Management</h1>
+            <p>Upload products from Excel file to manage your inventory</p>
+        </div>
+        
+        <div class="content">
+            <!-- Upload Section -->
+            <div class="section">
+                <h2>📤 Upload Products</h2>
+                
+                <div class="info-box">
+                    <h3>📋 Excel File Format</h3>
+                    <p>
+                        Your Excel file should have columns: <strong>code, name, category, description, costPrice, sellingPrice, stockLevel, reorderLevel</strong>
+                        <br>
+                        <strong>Required columns:</strong> code, name, sellingPrice
+                    </p>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click to select or drag & drop Excel file</div>
+                    <div class="upload-hint">Only .xlsx and .xls files accepted (Max 16MB)</div>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                </div>
+                
+                <div class="file-name" id="fileName"></div>
+                <div class="progress" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="message" id="message"></div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" id="uploadBtn" onclick="uploadFile()">Upload Products</button>
+                    <button class="btn-secondary" onclick="clearFile()">Clear Selection</button>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="section">
+                <h2>📊 Inventory Statistics</h2>
+                <button class="btn-secondary" onclick="loadStats()">Load Stats</button>
+                <div class="stats" id="stats"></div>
+                <div class="message" id="statsMessage"></div>
+            </div>
+            
+            <!-- Help Section -->
+            <div class="section">
+                <h2>❓ Help</h2>
+                <div class="info-box">
+                    <h3>How to use:</h3>
+                    <p>
+                        1. Prepare your Excel file with product data<br>
+                        2. Click the upload area and select your file<br>
+                        3. Click "Upload Products" button<br>
+                        4. Wait for the upload to complete<br>
+                        5. Check the status message for results
+                    </p>
+                </div>
+                <div class="info-box">
+                    <h3>What happens:</h3>
+                    <p>
+                        • New products are added to the database<br>
+                        • Existing products (same code) are updated<br>
+                        • Products become immediately available on the app
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameEl = document.getElementById('fileName');
+        const messageEl = document.getElementById('message');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressEl = document.getElementById('progressContainer');
+        
+        // Drag and drop
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileName();
+            }
+        });
+        
+        fileInput.addEventListener('change', updateFileName);
+        
+        function updateFileName() {
+            if (fileInput.files && fileInput.files[0]) {
+                const fileName = fileInput.files[0].name;
+                fileNameEl.textContent = '✓ Selected: ' + fileName;
+                fileNameEl.classList.add('show');
+            }
+        }
+        
+        function clearFile() {
+            fileInput.value = '';
+            fileNameEl.classList.remove('show');
+            messageEl.classList.remove('show');
+        }
+        
+        async function uploadFile() {
+            if (!fileInput.files || !fileInput.files[0]) {
+                showMessage('Please select a file', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            uploadBtn.disabled = true;
+            progressEl.classList.add('show');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/products/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                progressEl.classList.remove('show');
+                
+                if (data.success) {
+                    const summary = data.summary;
+                    showMessage(
+                        `✓ Upload successful!\n` +
+                        `Added/Updated: ${summary.successful}\n` +
+                        `Duplicates Updated: ${summary.duplicates_updated}\n` +
+                        `Errors: ${summary.errors_count}`,
+                        'success'
+                    );
+                    fileInput.value = '';
+                    fileNameEl.classList.remove('show');
+                    
+                    // Show errors if any
+                    if (data.errors && data.errors.length > 0) {
+                        console.log('Errors:', data.errors);
+                        showMessage('Some errors occurred: ' + data.errors.join(', '), 'info');
+                    }
+                } else {
+                    showMessage('Upload failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                progressEl.classList.remove('show');
+                showMessage('Error: ' + error.message, 'error');
+                console.error('Upload error:', error);
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('http://localhost:5000/api/stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    const statsDiv = document.getElementById('stats');
+                    statsDiv.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-label">Total Products</div>
+                            <div class="stat-value">${stats.total_products}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Stock</div>
+                            <div class="stat-value">${stats.total_stock_units}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Inventory Value</div>
+                            <div class="stat-value">KES ${stats.total_inventory_value.toLocaleString()}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Low Stock Items</div>
+                            <div class="stat-value">${stats.low_stock_items}</div>
+                        </div>
+                    `;
+                } else {
+                    showMessage('Failed to load stats', 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading stats: ' + error.message, 'error');
+            }
+        }
+        
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = `message show ${type}`;
+        }
+        
+        // Load stats on page load
+        window.addEventListener('load', loadStats);
+    </script>
+</body>
+</html>
