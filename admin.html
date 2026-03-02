@@ -417,7 +417,9 @@
             progressEl.classList.add('show');
             
             try {
-                const response = await fetch('http://localhost:5000/api/products/upload', {
+                // Build API URL dynamically based on current domain
+                const apiUrl = `${window.location.origin}/api/products/upload`;
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     body: formData
                 });
@@ -456,7 +458,8 @@
         
         async function loadStats() {
             try {
-                const response = await fetch('http://localhost:5000/api/stats');
+                const apiUrl = `${window.location.origin}/api/stats`;
+                const response = await fetch(apiUrl);
                 const data = await response.json();
                 
                 if (data.success) {
