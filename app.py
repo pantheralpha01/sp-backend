@@ -41,8 +41,10 @@ def create_app(env='development'):
     
     return app
 
+# Create app instance for Gunicorn/production
+app = create_app(os.getenv('FLASK_ENV', 'development'))
+
 if __name__ == '__main__':
-    app = create_app(os.getenv('FLASK_ENV', 'development'))
     print("\n" + "="*50)
     print("🚀 SP Backend Server Starting...")
     print("="*50)
