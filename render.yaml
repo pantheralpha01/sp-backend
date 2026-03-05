@@ -4,9 +4,19 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:create_app()
+    startCommand: gunicorn app:app
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
       - key: DATABASE_URL
-        scope: shared
+        fromDatabase:
+          name: sp-db
+          property: connectionString
+
+databases:
+  - name: sp-db
+    plan: free

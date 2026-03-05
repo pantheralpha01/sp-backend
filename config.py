@@ -1,13 +1,24 @@
 import os
-from datetime import datetime
+from datetime import timedelta
 
 class Config:
     """Flask configuration"""
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///sp_products.db'
+    # Support Render PostgreSQL via DATABASE_URL, fall back to local SQLite
+    _db_url = os.environ.get('DATABASE_URL', 'sqlite:///sp_products.db')
+    # Render provides postgres:// but SQLAlchemy needs postgresql://
+    if _db_url.startswith('postgres://'):
+        _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
-    
+
+    # Auth — MUST be set via env vars in production
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'dev-jwt-secret-change-in-production')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=12)
+
     # Ensure upload folder exists
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
