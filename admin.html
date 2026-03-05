@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP Products Admin</title>
+    <title>SP Admin Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 20px;
         }
         
@@ -28,6 +28,7 @@
             max-width: 900px;
             width: 100%;
             overflow: hidden;
+            margin: auto;
         }
         
         .header {
@@ -46,9 +47,50 @@
             font-size: 14px;
             opacity: 0.9;
         }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #555;
+            background: #f0f0f0;
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
         
         .content {
-            padding: 30px;
+            padding: 0;
         }
         
         .section {
@@ -133,6 +175,7 @@
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
         
         .btn-secondary {
@@ -143,12 +186,35 @@
         .btn-secondary:hover {
             background: #d0d0d0;
         }
+
+        .btn-danger {
+            background: #e53935;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+        }
+
+        .btn-success {
+            background: #43a047;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-success:hover {
+            background: #2e7d32;
+        }
         
         .message {
             padding: 15px;
             border-radius: 6px;
             margin-top: 15px;
             display: none;
+            white-space: pre-line;
         }
         
         .message.show {
@@ -262,6 +328,127 @@
             font-size: 13px;
             line-height: 1.5;
         }
+
+        /* User management styles */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+
+        .form-card {
+            background: #f8f9ff;
+            border: 1px solid #e0e4ff;
+            border-radius: 10px;
+            padding: 24px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-card h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #f0f2ff;
+            color: #555;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e0e4ff;
+        }
+
+        .users-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-owner {
+            background: #ede7f6;
+            color: #6a1b9a;
+        }
+
+        .badge-cashier {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-inactive {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .user-auth-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f0f2ff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .user-auth-bar span {
+            font-weight: 600;
+        }
+
+        .hidden { display: none !important; }
         
         @media (max-width: 600px) {
             .header {
@@ -272,12 +459,17 @@
                 font-size: 22px;
             }
             
-            .content {
+            .tab-panel {
                 padding: 20px;
             }
             
             .upload-area {
                 padding: 30px 20px;
+            }
+
+            .users-table th:nth-child(3),
+            .users-table td:nth-child(3) {
+                display: none;
             }
         }
     </style>
@@ -285,11 +477,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 SP Products Management</h1>
-            <p>Upload products from Excel file to manage your inventory</p>
+            <h1>SP Admin Dashboard</h1>
+            <p>Manage products and users for your POS system</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
+            <button class="tab-btn" onclick="switchTab('users')">👤 Users &amp; Cashiers</button>
         </div>
         
-        <div class="content">
+        <!-- ====== PRODUCTS TAB ====== -->
+        <div class="tab-panel active" id="tab-products">
             <!-- Upload Section -->
             <div class="section">
                 <h2>📤 Upload Products</h2>
@@ -305,7 +504,7 @@
                 
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">📁</div>
-                    <div class="upload-text">Click to select or drag & drop Excel file</div>
+                    <div class="upload-text">Click to select or drag &amp; drop Excel file</div>
                     <div class="upload-hint">Only .xlsx and .xls files accepted (Max 16MB)</div>
                     <input type="file" id="fileInput" accept=".xlsx,.xls" />
                 </div>
@@ -355,9 +554,115 @@
                 </div>
             </div>
         </div>
+
+        <!-- ====== USERS TAB ====== -->
+        <div class="tab-panel" id="tab-users">
+
+            <!-- Setup panel (first-time only) -->
+            <div id="panel-setup" class="hidden">
+                <div class="section">
+                    <h2>🔧 First-Time Setup</h2>
+                    <div class="info-box">
+                        <h3>No users found</h3>
+                        <p>Create the owner account to get started. The owner can add cashiers and manage the system.</p>
+                    </div>
+                    <div class="form-card">
+                        <h3>Create Owner Account</h3>
+                        <div class="form-group">
+                            <label>Owner Name</label>
+                            <input type="text" id="setupName" placeholder="e.g. Admin" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>PIN (4–6 digits)</label>
+                            <input type="password" id="setupPin" placeholder="Enter PIN" maxlength="6" autocomplete="new-password" />
+                        </div>
+                        <div class="message" id="setupMessage"></div>
+                        <div class="button-group" style="justify-content:center;margin-top:10px;">
+                            <button class="btn-primary" onclick="doSetup()">Create Owner</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login panel -->
+            <div id="panel-login" class="hidden">
+                <div class="section">
+                    <h2>🔐 Owner Login</h2>
+                    <div class="form-card">
+                        <h3>Sign in as Owner</h3>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="loginName" placeholder="Your name" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>PIN</label>
+                            <input type="password" id="loginPin" placeholder="Your PIN" maxlength="6" autocomplete="current-password" />
+                        </div>
+                        <div class="message" id="loginMessage"></div>
+                        <div class="button-group" style="justify-content:center;margin-top:10px;">
+                            <button class="btn-primary" onclick="doLogin()">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users management panel (shown when authenticated) -->
+            <div id="panel-users" class="hidden">
+
+                <!-- Auth bar -->
+                <div class="user-auth-bar">
+                    <div>Logged in as <span id="authName"></span> (Owner)</div>
+                    <button class="btn-secondary" style="padding:6px 16px;font-size:13px;" onclick="doLogout()">Logout</button>
+                </div>
+
+                <!-- Add cashier -->
+                <div class="section">
+                    <h2>➕ Add New Cashier</h2>
+                    <div style="display:flex;gap:15px;flex-wrap:wrap;align-items:flex-end;">
+                        <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+                            <label>Cashier Name</label>
+                            <input type="text" id="cashierName" placeholder="Full name" autocomplete="off" />
+                        </div>
+                        <div class="form-group" style="flex:1;min-width:140px;margin-bottom:0;">
+                            <label>PIN (4–6 digits)</label>
+                            <input type="password" id="cashierPin" placeholder="PIN" maxlength="6" autocomplete="new-password" />
+                        </div>
+                        <div style="padding-bottom:0;">
+                            <button class="btn-primary" onclick="addCashier()">Add Cashier</button>
+                        </div>
+                    </div>
+                    <div class="message" id="addCashierMessage"></div>
+                </div>
+
+                <!-- Users list -->
+                <div class="section">
+                    <h2>👥 All Users</h2>
+                    <button class="btn-secondary" onclick="loadUsers()" style="margin-bottom:10px;">Refresh</button>
+                    <div class="message" id="usersMessage"></div>
+                    <div id="usersTableContainer"></div>
+                </div>
+
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="panel-loading" style="text-align:center;padding:40px;color:#999;">
+                Loading...
+            </div>
+
+        </div><!-- end tab-users -->
     </div>
     
     <script>
+        // ===================== TAB SWITCHING =====================
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => {
+                b.classList.toggle('active', ['products','users'][i] === name);
+            });
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        // ===================== PRODUCTS =====================
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileNameEl = document.getElementById('fileName');
@@ -365,7 +670,6 @@
         const uploadBtn = document.getElementById('uploadBtn');
         const progressEl = document.getElementById('progressContainer');
         
-        // Drag and drop
         uploadArea.addEventListener('click', () => fileInput.click());
         
         uploadArea.addEventListener('dragover', (e) => {
@@ -380,7 +684,6 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
-            
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 fileInput.files = files;
@@ -392,8 +695,7 @@
         
         function updateFileName() {
             if (fileInput.files && fileInput.files[0]) {
-                const fileName = fileInput.files[0].name;
-                fileNameEl.textContent = '✓ Selected: ' + fileName;
+                fileNameEl.textContent = '✓ Selected: ' + fileInput.files[0].name;
                 fileNameEl.classList.add('show');
             }
         }
@@ -409,39 +711,26 @@
                 showMessage('Please select a file', 'error');
                 return;
             }
-            
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
-            
             uploadBtn.disabled = true;
             progressEl.classList.add('show');
-            
             try {
-                // Build API URL dynamically based on current domain
-                const apiUrl = `${window.location.origin}/api/products/upload`;
-                const response = await fetch(apiUrl, {
+                const response = await fetch(`${window.location.origin}/api/products/upload`, {
                     method: 'POST',
                     body: formData
                 });
-                
                 const data = await response.json();
                 progressEl.classList.remove('show');
-                
                 if (data.success) {
-                    const summary = data.summary;
+                    const s = data.summary;
                     showMessage(
-                        `✓ Upload successful!\n` +
-                        `Added/Updated: ${summary.successful}\n` +
-                        `Duplicates Updated: ${summary.duplicates_updated}\n` +
-                        `Errors: ${summary.errors_count}`,
+                        `Upload successful!\nAdded/Updated: ${s.successful}\nDuplicates Updated: ${s.duplicates_updated}\nErrors: ${s.errors_count}`,
                         'success'
                     );
                     fileInput.value = '';
                     fileNameEl.classList.remove('show');
-                    
-                    // Show errors if any
                     if (data.errors && data.errors.length > 0) {
-                        console.log('Errors:', data.errors);
                         showMessage('Some errors occurred: ' + data.errors.join(', '), 'info');
                     }
                 } else {
@@ -450,7 +739,6 @@
             } catch (error) {
                 progressEl.classList.remove('show');
                 showMessage('Error: ' + error.message, 'error');
-                console.error('Upload error:', error);
             } finally {
                 uploadBtn.disabled = false;
             }
@@ -458,36 +746,23 @@
         
         async function loadStats() {
             try {
-                const apiUrl = `${window.location.origin}/api/stats`;
-                const response = await fetch(apiUrl);
+                const response = await fetch(`${window.location.origin}/api/stats`);
                 const data = await response.json();
-                
                 if (data.success) {
                     const stats = data.data;
-                    const statsDiv = document.getElementById('stats');
-                    statsDiv.innerHTML = `
-                        <div class="stat-card">
-                            <div class="stat-label">Total Products</div>
-                            <div class="stat-value">${stats.total_products}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Total Stock</div>
-                            <div class="stat-value">${stats.total_stock_units}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Inventory Value</div>
-                            <div class="stat-value">KES ${stats.total_inventory_value.toLocaleString()}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Low Stock Items</div>
-                            <div class="stat-value">${stats.low_stock_items}</div>
-                        </div>
+                    document.getElementById('stats').innerHTML = `
+                        <div class="stat-card"><div class="stat-label">Total Products</div><div class="stat-value">${stats.total_products}</div></div>
+                        <div class="stat-card"><div class="stat-label">Total Stock</div><div class="stat-value">${stats.total_stock_units}</div></div>
+                        <div class="stat-card"><div class="stat-label">Inventory Value</div><div class="stat-value">KES ${stats.total_inventory_value.toLocaleString()}</div></div>
+                        <div class="stat-card"><div class="stat-label">Low Stock Items</div><div class="stat-value">${stats.low_stock_items}</div></div>
                     `;
                 } else {
-                    showMessage('Failed to load stats', 'error');
+                    document.getElementById('statsMessage').textContent = 'Failed to load stats';
+                    document.getElementById('statsMessage').className = 'message show error';
                 }
             } catch (error) {
-                showMessage('Error loading stats: ' + error.message, 'error');
+                document.getElementById('statsMessage').textContent = 'Error loading stats: ' + error.message;
+                document.getElementById('statsMessage').className = 'message show error';
             }
         }
         
@@ -495,7 +770,229 @@
             messageEl.textContent = text;
             messageEl.className = `message show ${type}`;
         }
-        
+
+        // ===================== USERS =====================
+        let authToken = null;
+        let currentUserName = '';
+
+        function showUserPanel(name) {
+            document.getElementById('panel-setup').classList.add('hidden');
+            document.getElementById('panel-login').classList.add('hidden');
+            document.getElementById('panel-users').classList.add('hidden');
+            document.getElementById('panel-loading').classList.add('hidden');
+            document.getElementById(name).classList.remove('hidden');
+        }
+
+        function showUserMsg(elId, text, type) {
+            const el = document.getElementById(elId);
+            el.textContent = text;
+            el.className = `message show ${type}`;
+        }
+
+        function hideUserMsg(elId) {
+            document.getElementById(elId).className = 'message';
+        }
+
+        async function initUsersTab() {
+            showUserPanel('panel-loading');
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/setup/status`);
+                const data = await res.json();
+                if (data.needsSetup) {
+                    showUserPanel('panel-setup');
+                } else if (authToken) {
+                    showUserPanel('panel-users');
+                    loadUsers();
+                } else {
+                    showUserPanel('panel-login');
+                }
+            } catch (e) {
+                showUserPanel('panel-login');
+            }
+        }
+
+        async function doSetup() {
+            const name = document.getElementById('setupName').value.trim();
+            const pin = document.getElementById('setupPin').value.trim();
+            if (!name || !pin) { showUserMsg('setupMessage', 'Name and PIN are required.', 'error'); return; }
+            if (!/^\d{4,6}$/.test(pin)) { showUserMsg('setupMessage', 'PIN must be 4–6 digits.', 'error'); return; }
+            hideUserMsg('setupMessage');
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, pin })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    authToken = data.token;
+                    currentUserName = data.user.name;
+                    document.getElementById('authName').textContent = currentUserName;
+                    showUserPanel('panel-users');
+                    loadUsers();
+                } else {
+                    showUserMsg('setupMessage', data.message || 'Setup failed.', 'error');
+                }
+            } catch (e) {
+                showUserMsg('setupMessage', 'Network error: ' + e.message, 'error');
+            }
+        }
+
+        async function doLogin() {
+            const name = document.getElementById('loginName').value.trim();
+            const pin = document.getElementById('loginPin').value.trim();
+            if (!name || !pin) { showUserMsg('loginMessage', 'Name and PIN are required.', 'error'); return; }
+            hideUserMsg('loginMessage');
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, pin })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.user.role !== 'owner') {
+                        showUserMsg('loginMessage', 'Only owners can access this dashboard.', 'error');
+                        return;
+                    }
+                    authToken = data.token;
+                    currentUserName = data.user.name;
+                    document.getElementById('authName').textContent = currentUserName;
+                    showUserPanel('panel-users');
+                    loadUsers();
+                } else {
+                    showUserMsg('loginMessage', data.message || 'Login failed.', 'error');
+                }
+            } catch (e) {
+                showUserMsg('loginMessage', 'Network error: ' + e.message, 'error');
+            }
+        }
+
+        function doLogout() {
+            authToken = null;
+            currentUserName = '';
+            document.getElementById('loginName').value = '';
+            document.getElementById('loginPin').value = '';
+            showUserPanel('panel-login');
+        }
+
+        async function loadUsers() {
+            hideUserMsg('usersMessage');
+            document.getElementById('usersTableContainer').innerHTML = '<p style="color:#999;font-size:13px;">Loading...</p>';
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/users`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                if (res.status === 401 || res.status === 403) {
+                    authToken = null;
+                    showUserPanel('panel-login');
+                    return;
+                }
+                const data = await res.json();
+                if (res.ok && data.users) {
+                    renderUsersTable(data.users);
+                } else {
+                    showUserMsg('usersMessage', data.message || 'Failed to load users.', 'error');
+                    document.getElementById('usersTableContainer').innerHTML = '';
+                }
+            } catch (e) {
+                showUserMsg('usersMessage', 'Network error: ' + e.message, 'error');
+                document.getElementById('usersTableContainer').innerHTML = '';
+            }
+        }
+
+        function renderUsersTable(users) {
+            if (!users.length) {
+                document.getElementById('usersTableContainer').innerHTML = '<p style="color:#999;font-size:13px;">No users found.</p>';
+                return;
+            }
+            let rows = users.map(u => `
+                <tr>
+                    <td><strong>${escapeHtml(u.name)}</strong></td>
+                    <td><span class="badge badge-${u.role}">${u.role}</span></td>
+                    <td><span class="badge badge-${u.isActive ? 'active' : 'inactive'}">${u.isActive ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        ${u.isActive
+                            ? `<button class="btn-danger" onclick="toggleUser(${u.id}, false)">Deactivate</button>`
+                            : `<button class="btn-success" onclick="toggleUser(${u.id}, true)">Activate</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('usersTableContainer').innerHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        async function addCashier() {
+            const name = document.getElementById('cashierName').value.trim();
+            const pin = document.getElementById('cashierPin').value.trim();
+            if (!name || !pin) { showUserMsg('addCashierMessage', 'Name and PIN are required.', 'error'); return; }
+            if (!/^\d{4,6}$/.test(pin)) { showUserMsg('addCashierMessage', 'PIN must be 4–6 digits.', 'error'); return; }
+            hideUserMsg('addCashierMessage');
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({ name, pin, role: 'cashier' })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showUserMsg('addCashierMessage', 'Cashier "' + escapeHtml(name) + '" added successfully.', 'success');
+                    document.getElementById('cashierName').value = '';
+                    document.getElementById('cashierPin').value = '';
+                    loadUsers();
+                } else {
+                    showUserMsg('addCashierMessage', data.message || 'Failed to add cashier.', 'error');
+                }
+            } catch (e) {
+                showUserMsg('addCashierMessage', 'Network error: ' + e.message, 'error');
+            }
+        }
+
+        async function toggleUser(userId, isActive) {
+            try {
+                const res = await fetch(`${window.location.origin}/api/auth/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({ isActive })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    loadUsers();
+                } else {
+                    showUserMsg('usersMessage', data.message || 'Update failed.', 'error');
+                }
+            } catch (e) {
+                showUserMsg('usersMessage', 'Network error: ' + e.message, 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // Initialize users tab when it's clicked
+        document.querySelectorAll('.tab-btn')[1].addEventListener('click', () => {
+            if (!authToken) initUsersTab();
+        });
+
         // Load stats on page load
         window.addEventListener('load', loadStats);
     </script>
