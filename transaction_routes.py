@@ -1,19 +1,20 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from models import Transaction, TransactionItem, Payment, Product, db
 from datetime import datetime
 
 transactions_bp = Blueprint('transactions', __name__, url_prefix='/api/transactions')
 
 
-def _build_transaction(data, identity):
+def _build_transaction(data, user_id, claims):
     """Create Transaction + children from a dict. Deducts stock. No commit."""
     txn = Transaction(
         id=data['id'],
         receipt_number=data['receiptNumber'],
         shift_id=data.get('shiftId'),
-        cashier_id=data.get('cashierId', identity['id']),
-        cashier_name=data.get('cashierName', identity['name']),
+        cashier_id=data.get('cashierId', user_id),
+        cashier_name=data.get('cashierName', claims.get('name', '')),
+
         subtotal=float(data.get('subtotal', 0)),
         discount_total=float(data.get('discountTotal', 0)),
         tax_total=float(data.get('taxTotal', 0)),
@@ -70,7 +71,8 @@ def _build_transaction(data, identity):
 @jwt_required()
 def sync_transaction():
     """Receive one transaction from Flutter.  Idempotent on transaction id."""
-    identity = get_jwt_identity()
+    user_id = get_jwt_identity()
+    claims = get_jwt()
     data = request.get_json() or {}
 
     if not data.get('id') or not data.get('receiptNumber') or 'grandTotal' not in data:
@@ -82,7 +84,7 @@ def sync_transaction():
         return jsonify({'success': True, 'message': 'Already synced', 'data': existing.to_dict()}), 200
 
     try:
-        txn = _build_transaction(data, identity)
+        txn = _build_transaction(data, user_id, claims)
         db.session.commit()
         return jsonify({'success': True, 'data': txn.to_dict()}), 201
     except Exception as e:
@@ -98,7 +100,8 @@ def sync_transaction():
 @jwt_required()
 def sync_batch():
     """Receive many transactions at once.  Each is idempotent individually."""
-    identity = get_jwt_identity()
+    user_id = get_jwt_identity()
+    claims = get_jwt()
     data = request.get_json() or {}
     transactions_data = data.get('transactions', [])
 
@@ -109,7 +112,7 @@ def sync_batch():
             results['skipped'] += 1
             continue
         try:
-            _build_transaction(txn_data, identity)
+            _build_transaction(txn_data, user_id, claims)
             db.session.commit()
             results['synced'] += 1
         except Exception as e:
@@ -128,11 +131,12 @@ def sync_batch():
 @jwt_required()
 def list_transactions():
     """List transactions.  Owner sees all; cashier sees only their own."""
-    identity = get_jwt_identity()
+    user_id = get_jwt_identity()
+    claims = get_jwt()
 
     query = Transaction.query
-    if identity['role'] != 'owner':
-        query = query.filter_by(cashier_id=identity['id'])
+    if claims.get('role') != 'owner':
+        query = query.filter_by(cashier_id=user_id)
 
     shift_id = request.args.get('shiftId')
     date_from = request.args.get('dateFrom')

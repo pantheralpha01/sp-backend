@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from models import Transaction, TransactionItem, Expense, Shift, Product, db
 from datetime import datetime, date, timedelta
 
@@ -10,8 +10,8 @@ reports_bp = Blueprint('reports', __name__, url_prefix='/api/reports')
 @jwt_required()
 def daily_report():
     """Sales summary for a single day.  Owner only."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     date_str = request.args.get('date', date.today().isoformat())
@@ -76,8 +76,8 @@ def daily_report():
 @jwt_required()
 def range_report():
     """Sales summary over a date range (default: last 7 days).  Owner only."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     default_from = (date.today() - timedelta(days=6)).isoformat()
@@ -125,8 +125,9 @@ def range_report():
 @jwt_required()
 def cashier_report(cashier_id):
     """All transactions for a specific cashier.  Owner or the cashier themselves."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner' and identity['id'] != cashier_id:
+    user_id = get_jwt_identity()
+    claims = get_jwt()
+    if claims.get('role') != 'owner' and user_id != cashier_id:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
 
     date_from = request.args.get('from')

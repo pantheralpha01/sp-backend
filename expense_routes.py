@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from models import Expense, db
 from datetime import datetime
 
@@ -10,7 +10,8 @@ expenses_bp = Blueprint('expenses', __name__, url_prefix='/api/expenses')
 @jwt_required()
 def sync_expense():
     """Receive a synced expense from Flutter.  Idempotent on expense id."""
-    identity = get_jwt_identity()
+    user_id = get_jwt_identity()
+    claims = get_jwt()
     data = request.get_json() or {}
 
     if not data.get('category') or 'amount' not in data:
@@ -26,8 +27,9 @@ def sync_expense():
         expense = Expense(
             id=data.get('id'),   # None → auto-generated UUID
             shift_id=data.get('shiftId'),
-            cashier_id=data.get('cashierId', identity['id']),
-            cashier_name=data.get('cashierName', identity['name']),
+            cashier_id=data.get('cashierId', user_id),
+            cashier_name=data.get('cashierName', claims.get('name', '')),
+
             category=data['category'],
             amount=float(data['amount']),
             description=data.get('description', ''),
@@ -50,11 +52,12 @@ def sync_expense():
 @jwt_required()
 def list_expenses():
     """List expenses.  Owner sees all; cashier sees only their own."""
-    identity = get_jwt_identity()
+    user_id = get_jwt_identity()
+    claims = get_jwt()
 
     query = Expense.query
-    if identity['role'] != 'owner':
-        query = query.filter_by(cashier_id=identity['id'])
+    if claims.get('role') != 'owner':
+        query = query.filter_by(cashier_id=user_id)
 
     shift_id = request.args.get('shiftId')
     status = request.args.get('status')
@@ -70,8 +73,8 @@ def list_expenses():
 @expenses_bp.route('/<expense_id>/approve', methods=['PUT'])
 @jwt_required()
 def approve_expense(expense_id):
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     expense = Expense.query.get(expense_id)
@@ -79,7 +82,7 @@ def approve_expense(expense_id):
         return jsonify({'success': False, 'message': 'Expense not found'}), 404
 
     expense.approval_status = 'approved'
-    expense.approved_by = identity['name']
+    expense.approved_by = claims.get('name', '')
     db.session.commit()
     return jsonify({'success': True, 'data': expense.to_dict()}), 200
 
@@ -87,8 +90,8 @@ def approve_expense(expense_id):
 @expenses_bp.route('/<expense_id>/reject', methods=['PUT'])
 @jwt_required()
 def reject_expense(expense_id):
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     expense = Expense.query.get(expense_id)
@@ -96,6 +99,6 @@ def reject_expense(expense_id):
         return jsonify({'success': False, 'message': 'Expense not found'}), 404
 
     expense.approval_status = 'rejected'
-    expense.approved_by = identity['name']
+    expense.approved_by = claims.get('name', '')
     db.session.commit()
     return jsonify({'success': True, 'data': expense.to_dict()}), 200
