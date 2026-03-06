@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from models import User, db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -36,7 +36,8 @@ def initial_setup():
     db.session.commit()
 
     token = create_access_token(
-        identity={'id': user.id, 'name': user.name, 'role': user.role}
+        identity=str(user.id),
+        additional_claims={'name': user.name, 'role': user.role}
     )
     return jsonify({'success': True, 'token': token, 'user': user.to_dict()}), 201
 
@@ -64,7 +65,8 @@ def login():
         return jsonify({'success': False, 'message': 'Invalid name or PIN'}), 401
 
     token = create_access_token(
-        identity={'id': user.id, 'name': user.name, 'role': user.role}
+        identity=str(user.id),
+        additional_claims={'name': user.name, 'role': user.role}
     )
     return jsonify({'success': True, 'token': token, 'user': user.to_dict()}), 200
 
@@ -73,8 +75,8 @@ def login():
 @jwt_required()
 def me():
     """Return the profile of the authenticated user."""
-    identity = get_jwt_identity()
-    user = User.query.get(identity['id'])
+    user_id = get_jwt_identity()
+    user = User.query.get(int(user_id))
     if not user:
         return jsonify({'success': False, 'message': 'User not found'}), 404
     return jsonify({'success': True, 'user': user.to_dict()}), 200
@@ -88,8 +90,8 @@ def me():
 @jwt_required()
 def list_users():
     """List all users.  Owner only."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     users = User.query.order_by(User.name).all()
@@ -100,8 +102,8 @@ def list_users():
 @jwt_required()
 def create_user():
     """Create a new cashier or owner account.  Owner only."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'owner':
+    claims = get_jwt()
+    if claims.get('role') != 'owner':
         return jsonify({'success': False, 'message': 'Owner access required'}), 403
 
     data = request.get_json() or {}
@@ -131,9 +133,10 @@ def create_user():
 @jwt_required()
 def update_user(user_id):
     """Update a user.  Owner can change anything; a cashier can only change their own PIN."""
-    identity = get_jwt_identity()
-    is_owner = identity['role'] == 'owner'
-    is_self = identity['id'] == user_id
+    claims = get_jwt()
+    current_user_id = get_jwt_identity()
+    is_owner = claims.get('role') == 'owner'
+    is_self = current_user_id == user_id
 
     if not is_owner and not is_self:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
