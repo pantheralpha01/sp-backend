@@ -485,6 +485,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
             <button class="tab-btn" onclick="switchTab('users')">👤 Users &amp; Cashiers</button>
+            <button class="tab-btn" onclick="switchTab('reports')">📊 Sales Reports</button>
         </div>
         
         <!-- ====== PRODUCTS TAB ====== -->
@@ -650,13 +651,77 @@
             </div>
 
         </div><!-- end tab-users -->
+
+        <!-- ====== SALES REPORTS TAB ====== -->
+        <div class="tab-panel" id="tab-reports">
+
+            <!-- Auth gate (shown when not logged in) -->
+            <div id="rpt-gate" class="hidden">
+                <div class="section">
+                    <div class="info-box">
+                        <h3>🔐 Login required</h3>
+                        <p>Please go to the <strong>Users &amp; Cashiers</strong> tab and log in as Owner first, then come back here.</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="switchTab('users');initUsersTab();">Go to Login</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report panel (shown when authenticated) -->
+            <div id="rpt-panel" class="hidden">
+
+                <!-- Auth bar -->
+                <div class="user-auth-bar">
+                    <div>Viewing as <span id="rptAuthName"></span> (Owner)</div>
+                    <button class="btn-secondary" style="padding:6px 16px;font-size:13px;" onclick="doLogout();switchTab('users');">Logout</button>
+                </div>
+
+                <!-- Date selector -->
+                <div class="section">
+                    <h2>📅 Daily Sales Report</h2>
+                    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Date</label>
+                            <input type="date" id="rptDate" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;" />
+                        </div>
+                        <button class="btn-primary" onclick="loadReport()">Load Report</button>
+                        <button class="btn-secondary" onclick="loadShifts()">View Shifts</button>
+                    </div>
+                    <div class="message" id="rptMsg"></div>
+                </div>
+
+                <!-- Summary cards -->
+                <div class="section" id="rpt-summary" style="display:none;">
+                    <h2>💰 Summary</h2>
+                    <div class="stats" id="rptCards"></div>
+
+                    <div style="margin-top:20px;">
+                        <h3 style="margin-bottom:10px;font-size:14px;color:#555;">Revenue by Payment Method</h3>
+                        <div id="rptByMethod"></div>
+                    </div>
+
+                    <div style="margin-top:20px;">
+                        <h3 style="margin-bottom:10px;font-size:14px;color:#555;">Revenue by Cashier</h3>
+                        <div id="rptByCashier"></div>
+                    </div>
+                </div>
+
+                <!-- Shifts for the day -->
+                <div class="section" id="rpt-shifts" style="display:none;">
+                    <h2>🕐 Shifts</h2>
+                    <div id="rptShiftsList"></div>
+                </div>
+
+            </div><!-- end rpt-panel -->
+        </div><!-- end tab-reports -->
     </div>
     
     <script>
         // ===================== TAB SWITCHING =====================
         function switchTab(name) {
             document.querySelectorAll('.tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', ['products','users'][i] === name);
+                b.classList.toggle('active', ['products','users','reports'][i] === name);
             });
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('tab-' + name).classList.add('active');
@@ -992,6 +1057,165 @@
         document.querySelectorAll('.tab-btn')[1].addEventListener('click', () => {
             if (!authToken) initUsersTab();
         });
+
+        // Initialize reports tab when clicked
+        document.querySelectorAll('.tab-btn')[2].addEventListener('click', () => {
+            initReportsTab();
+        });
+
+        // ===================== SALES REPORTS =====================
+        function initReportsTab() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateEl = document.getElementById('rptDate');
+            if (!dateEl.value) dateEl.value = today;
+
+            if (!authToken) {
+                document.getElementById('rpt-gate').classList.remove('hidden');
+                document.getElementById('rpt-panel').classList.add('hidden');
+            } else {
+                document.getElementById('rpt-gate').classList.add('hidden');
+                document.getElementById('rpt-panel').classList.remove('hidden');
+                document.getElementById('rptAuthName').textContent = currentUserName;
+            }
+        }
+
+        function fmtKES(val) {
+            return 'KES ' + Number(val || 0).toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function showRptMsg(text, type) {
+            const el = document.getElementById('rptMsg');
+            el.textContent = text;
+            el.className = 'message show ' + type;
+        }
+        function hideRptMsg() { document.getElementById('rptMsg').className = 'message'; }
+
+        async function loadReport() {
+            if (!authToken) { initReportsTab(); return; }
+            const date = document.getElementById('rptDate').value;
+            if (!date) { showRptMsg('Please select a date.', 'error'); return; }
+            hideRptMsg();
+            showRptMsg('Loading report…', 'info');
+            try {
+                const res = await fetch(`${window.location.origin}/api/reports/daily?date=${date}`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                if (res.status === 401 || res.status === 403) { authToken = null; initReportsTab(); return; }
+                const data = await res.json();
+                hideRptMsg();
+                if (res.ok && data.success) {
+                    renderReport(data.data);
+                } else {
+                    showRptMsg(data.message || 'Failed to load report.', 'error');
+                }
+            } catch (e) {
+                showRptMsg('Network error: ' + e.message, 'error');
+            }
+        }
+
+        function renderReport(d) {
+            document.getElementById('rptCards').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" style="font-size:18px">${fmtKES(d.totalRevenue)}</div></div>
+                <div class="stat-card"><div class="stat-label">Net Revenue</div><div class="stat-value" style="font-size:18px">${fmtKES(d.netRevenue)}</div></div>
+                <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value">${d.totalTransactions}</div></div>
+                <div class="stat-card"><div class="stat-label">Expenses</div><div class="stat-value" style="color:#e53935">${fmtKES(d.totalExpenses)}</div></div>
+            `;
+
+            const methods = d.revenueByMethod || {};
+            const methodKeys = Object.keys(methods);
+            if (methodKeys.length) {
+                const pills = methodKeys.map(m =>
+                    `<span style="display:inline-block;background:#e8f0fe;color:#3949ab;border-radius:16px;padding:6px 16px;margin:4px;font-size:13px;font-weight:600;">
+                        ${escapeHtml(m.charAt(0).toUpperCase()+m.slice(1))}: ${fmtKES(methods[m])}
+                    </span>`
+                ).join('');
+                document.getElementById('rptByMethod').innerHTML = `<div>${pills}</div>`;
+            } else {
+                document.getElementById('rptByMethod').innerHTML = '<p style="color:#999;font-size:13px;">No payment data.</p>';
+            }
+
+            const cashiers = d.revenueByCashier || {};
+            const cashierKeys = Object.keys(cashiers);
+            if (cashierKeys.length) {
+                const rows = cashierKeys.map(name => {
+                    const c = cashiers[name];
+                    return `<tr>
+                        <td><strong>${escapeHtml(name)}</strong></td>
+                        <td style="text-align:center">${c.count}</td>
+                        <td style="text-align:right">${fmtKES(c.total)}</td>
+                    </tr>`;
+                }).join('');
+                document.getElementById('rptByCashier').innerHTML = `
+                    <table class="users-table">
+                        <thead><tr><th>Cashier</th><th style="text-align:center">Txns</th><th style="text-align:right">Total</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>`;
+            } else {
+                document.getElementById('rptByCashier').innerHTML = '<p style="color:#999;font-size:13px;">No cashier data.</p>';
+            }
+
+            document.getElementById('rpt-summary').style.display = '';
+        }
+
+        async function loadShifts() {
+            if (!authToken) { initReportsTab(); return; }
+            const date = document.getElementById('rptDate').value;
+            hideRptMsg();
+            showRptMsg('Loading shifts…', 'info');
+            try {
+                const res = await fetch(`${window.location.origin}/api/shifts?status=closed`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                if (res.status === 401 || res.status === 403) { authToken = null; initReportsTab(); return; }
+                const data = await res.json();
+                hideRptMsg();
+                if (res.ok && data.data) {
+                    let shifts = data.data;
+                    if (date) {
+                        shifts = shifts.filter(s => {
+                            const opened = s.openedAt || s.opened_at || '';
+                            const closed = s.closedAt || s.closed_at || '';
+                            return opened.startsWith(date) || closed.startsWith(date);
+                        });
+                    }
+                    renderShifts(shifts);
+                } else {
+                    showRptMsg(data.message || 'Could not load shifts.', 'error');
+                }
+            } catch (e) {
+                showRptMsg('Network error: ' + e.message, 'error');
+            }
+        }
+
+        function renderShifts(shifts) {
+            document.getElementById('rpt-shifts').style.display = '';
+            if (!shifts.length) {
+                document.getElementById('rptShiftsList').innerHTML = '<p style="color:#999;font-size:13px;">No closed shifts found for this date.</p>';
+                return;
+            }
+            const rows = shifts.map(s => {
+                const opened = s.openedAt || s.opened_at || '';
+                const closed = s.closedAt || s.closed_at || '';
+                const cashier = s.cashierName || s.cashier_name || s.userName || 'Unknown';
+                const closing = s.closingCash != null ? fmtKES(s.closingCash) : '—';
+                const variance = s.variance != null ? fmtKES(s.variance) : '—';
+                const varColor = (s.variance || 0) < 0 ? '#e53935' : '#43a047';
+                const status = s.status || 'unknown';
+                return `<tr>
+                    <td>${escapeHtml(cashier)}</td>
+                    <td><span class="badge badge-${status}">${status}</span></td>
+                    <td style="font-size:12px">${opened ? new Date(opened).toLocaleTimeString() : '—'}</td>
+                    <td style="font-size:12px">${closed ? new Date(closed).toLocaleTimeString() : '—'}</td>
+                    <td style="text-align:right">${closing}</td>
+                    <td style="text-align:right;color:${varColor}">${variance}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('rptShiftsList').innerHTML = `
+                <table class="users-table">
+                    <thead><tr><th>Cashier</th><th>Status</th><th>Opened</th><th>Closed</th><th style="text-align:right">Closing Cash</th><th style="text-align:right">Variance</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
 
         // Load stats on page load
         window.addEventListener('load', loadStats);
