@@ -5,9 +5,11 @@ class Config:
     """Flask configuration"""
     # Support Render PostgreSQL via DATABASE_URL, fall back to local SQLite
     _db_url = os.environ.get('DATABASE_URL', 'sqlite:///sp_products.db')
-    # Render provides postgres:// but SQLAlchemy needs postgresql://
+    # Render provides postgres:// — rewrite to use pg8000 dialect (pure Python, any Python version)
     if _db_url.startswith('postgres://'):
-        _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+        _db_url = _db_url.replace('postgres://', 'postgresql+pg8000://', 1)
+    elif _db_url.startswith('postgresql://'):
+        _db_url = _db_url.replace('postgresql://', 'postgresql+pg8000://', 1)
     SQLALCHEMY_DATABASE_URI = _db_url
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
