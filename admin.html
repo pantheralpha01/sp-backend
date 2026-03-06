@@ -889,10 +889,10 @@
                     return;
                 }
                 const data = await res.json();
-                if (res.ok && data.users) {
-                    renderUsersTable(data.users);
+                if (res.ok && data.data) {
+                    renderUsersTable(data.data);
                 } else {
-                    showUserMsg('usersMessage', data.message || 'Failed to load users.', 'error');
+                    showUserMsg('usersMessage', data.message || data.msg || 'Failed to load users.', 'error');
                     document.getElementById('usersTableContainer').innerHTML = '';
                 }
             } catch (e) {
@@ -956,7 +956,7 @@
                     document.getElementById('cashierPin').value = '';
                     loadUsers();
                 } else {
-                    showUserMsg('addCashierMessage', data.message || 'Failed to add cashier.', 'error');
+                    showUserMsg('addCashierMessage', data.message || data.msg || 'Failed to add cashier.', 'error');
                 }
             } catch (e) {
                 showUserMsg('addCashierMessage', 'Network error: ' + e.message, 'error');
