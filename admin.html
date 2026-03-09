@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f4f4f4;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,117 +23,121 @@
         
         .container {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 900px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            max-width: 960px;
             width: 100%;
             overflow: hidden;
             margin: auto;
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             color: white;
-            padding: 30px;
+            padding: 24px 30px;
             text-align: center;
         }
         
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
         
         .header p {
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 13px;
+            color: #aaa;
         }
 
         /* Tabs */
         .tabs {
             display: flex;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 1px solid #ddd;
             background: #fafafa;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 14px 20px;
+            padding: 13px 16px;
             border: none;
             background: transparent;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
-            color: #888;
+            color: #666;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color 0.15s, border-color 0.15s;
         }
 
         .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: #2563eb;
+            border-bottom-color: #2563eb;
             background: white;
         }
 
         .tab-btn:hover:not(.active) {
-            color: #555;
+            color: #333;
             background: #f0f0f0;
         }
 
         .tab-panel {
             display: none;
-            padding: 30px;
+            padding: 28px 30px;
         }
 
         .tab-panel.active {
             display: block;
         }
         
-        .content {
-            padding: 0;
-        }
+        .content { padding: 0; }
         
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
         
         .section h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #111;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
         
         .upload-area {
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 40px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            padding: 36px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9ff;
+            transition: border-color 0.2s, background 0.2s;
+            background: #fafafa;
         }
         
         .upload-area:hover {
-            background: #eff2ff;
-            border-color: #764ba2;
+            background: #f0f4ff;
+            border-color: #2563eb;
         }
         
         .upload-area.dragover {
-            background: #e8ebff;
-            border-color: #667eea;
+            background: #e8f0fe;
+            border-color: #2563eb;
         }
         
         .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 36px;
+            margin-bottom: 12px;
+            color: #555;
         }
         
         .upload-text {
-            font-size: 16px;
+            font-size: 15px;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .upload-hint {
@@ -141,165 +145,154 @@
             color: #999;
         }
         
-        input[type="file"] {
-            display: none;
-        }
+        input[type="file"] { display: none; }
         
         .button-group {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
         
         button {
-            padding: 12px 24px;
+            padding: 10px 22px;
             border: none;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 4px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.15s;
             font-weight: 600;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2563eb;
             color: white;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #1d4ed8;
         }
         
         .btn-primary:disabled {
-            opacity: 0.5;
+            opacity: 0.45;
             cursor: not-allowed;
-            transform: none;
         }
         
         .btn-secondary {
-            background: #e0e0e0;
+            background: #e5e5e5;
             color: #333;
         }
         
         .btn-secondary:hover {
-            background: #d0d0d0;
+            background: #d4d4d4;
         }
 
         .btn-danger {
-            background: #e53935;
+            background: #dc2626;
             color: white;
-            padding: 6px 14px;
+            padding: 5px 12px;
             font-size: 12px;
         }
 
-        .btn-danger:hover {
-            background: #c62828;
-        }
+        .btn-danger:hover { background: #b91c1c; }
 
         .btn-success {
-            background: #43a047;
+            background: #16a34a;
             color: white;
-            padding: 6px 14px;
+            padding: 5px 12px;
             font-size: 12px;
         }
 
-        .btn-success:hover {
-            background: #2e7d32;
-        }
+        .btn-success:hover { background: #15803d; }
         
         .message {
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            margin-top: 12px;
             display: none;
             white-space: pre-line;
+            font-size: 13px;
         }
         
-        .message.show {
-            display: block;
-        }
+        .message.show { display: block; }
         
         .message.success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
         }
         
         .message.error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
         }
         
         .message.info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
         }
         
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
         }
         
         .stat-card {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
+            background: #f9f9f9;
+            border: 1px solid #e5e5e5;
+            padding: 18px;
+            border-radius: 4px;
             text-align: center;
         }
         
         .stat-label {
-            font-size: 12px;
-            color: #999;
+            font-size: 11px;
+            color: #888;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
         
         .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 26px;
+            font-weight: 700;
+            color: #111;
         }
         
         .file-name {
             margin-top: 10px;
-            padding: 10px;
+            padding: 9px 12px;
             background: #f0f0f0;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
             display: none;
         }
         
-        .file-name.show {
-            display: block;
-        }
+        .file-name.show { display: block; }
         
         .progress {
-            margin-top: 15px;
+            margin-top: 12px;
             display: none;
         }
         
-        .progress.show {
-            display: block;
-        }
+        .progress.show { display: block; }
         
         .progress-bar {
             width: 100%;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
+            height: 4px;
+            background: #e5e5e5;
+            border-radius: 2px;
             overflow: hidden;
         }
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: #2563eb;
             width: 0%;
             animation: loading 1.5s ease-in-out infinite;
         }
@@ -310,125 +303,115 @@
         }
         
         .info-box {
-            background: #f0f7ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            background: #f9f9f9;
+            border-left: 3px solid #2563eb;
+            padding: 12px 14px;
+            border-radius: 2px;
+            margin-bottom: 16px;
         }
         
         .info-box h3 {
-            color: #667eea;
-            margin-bottom: 8px;
-            font-size: 14px;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            font-size: 13px;
         }
         
         .info-box p {
-            color: #666;
+            color: #555;
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         /* User management styles */
-        .form-group {
-            margin-bottom: 16px;
-        }
+        .form-group { margin-bottom: 14px; }
 
         .form-group label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #555;
-            margin-bottom: 6px;
+            color: #444;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 9px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 14px;
-            transition: border-color 0.2s;
+            transition: border-color 0.15s;
+            background: white;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
         }
 
         .form-card {
-            background: #f8f9ff;
-            border: 1px solid #e0e4ff;
-            border-radius: 10px;
-            padding: 24px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 22px;
             max-width: 400px;
             margin: 0 auto;
         }
 
         .form-card h3 {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 15px;
+            color: #111;
+            margin-bottom: 18px;
             text-align: center;
         }
 
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 12px;
+            font-size: 13px;
         }
 
         .users-table th {
             text-align: left;
-            padding: 10px 12px;
-            background: #f0f2ff;
-            color: #555;
-            font-weight: 600;
-            font-size: 12px;
+            padding: 9px 12px;
+            background: #f4f4f4;
+            color: #444;
+            font-weight: 700;
+            font-size: 11px;
             text-transform: uppercase;
-            border-bottom: 2px solid #e0e4ff;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #ddd;
         }
 
         .users-table td {
-            padding: 12px;
+            padding: 11px 12px;
             border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
         }
 
-        .users-table tr:last-child td {
-            border-bottom: none;
-        }
+        .users-table tr:last-child td { border-bottom: none; }
 
         .badge {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
+            padding: 2px 9px;
+            border-radius: 2px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .badge-owner {
-            background: #ede7f6;
-            color: #6a1b9a;
-        }
-
-        .badge-cashier {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .badge-active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .badge-inactive {
-            background: #fce4ec;
-            color: #c62828;
-        }
+        .badge-owner   { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+        .badge-cashier { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-active  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-inactive{ background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge-open    { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-closed  { background: #f4f4f4; color: #555;    border: 1px solid #ddd; }
 
         .user-auth-bar {
             display: flex;
@@ -436,41 +419,26 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            background: #f0f2ff;
-            border-radius: 8px;
-            padding: 12px 16px;
+            background: #f4f4f4;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px 14px;
             margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
         }
 
-        .user-auth-bar span {
-            font-weight: 600;
-        }
+        .user-auth-bar span { font-weight: 700; }
 
         .hidden { display: none !important; }
         
         @media (max-width: 600px) {
-            .header {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .tab-panel {
-                padding: 20px;
-            }
-            
-            .upload-area {
-                padding: 30px 20px;
-            }
-
+            .header { padding: 18px 20px; }
+            .header h1 { font-size: 18px; }
+            .tab-panel { padding: 18px 16px; }
+            .upload-area { padding: 24px 16px; }
             .users-table th:nth-child(3),
-            .users-table td:nth-child(3) {
-                display: none;
-            }
+            .users-table td:nth-child(3) { display: none; }
         }
     </style>
 </head>
@@ -483,20 +451,20 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
-            <button class="tab-btn" onclick="switchTab('users')">👤 Users &amp; Cashiers</button>
-            <button class="tab-btn" onclick="switchTab('reports')">📊 Sales Reports</button>
-            <button class="tab-btn" onclick="switchTab('etims')">🧾 eTIMS / KRA</button>
+            <button class="tab-btn active" onclick="switchTab('products')">Products</button>
+            <button class="tab-btn" onclick="switchTab('users')">Users &amp; Cashiers</button>
+            <button class="tab-btn" onclick="switchTab('reports')">Sales Reports</button>
+            <button class="tab-btn" onclick="switchTab('etims')">eTIMS / KRA</button>
         </div>
         
         <!-- ====== PRODUCTS TAB ====== -->
         <div class="tab-panel active" id="tab-products">
             <!-- Upload Section -->
             <div class="section">
-                <h2>📤 Upload Products</h2>
+                <h2>Upload Products</h2>
                 
                 <div class="info-box">
-                    <h3>📋 Excel File Format</h3>
+                    <h3>Excel File Format</h3>
                     <p>
                         Your Excel file should have columns: <strong>code, name, category, description, costPrice, sellingPrice, stockLevel, reorderLevel</strong>
                         <br>
@@ -505,7 +473,7 @@
                 </div>
                 
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
+                    <div class="upload-icon">&#x2B06;</div>
                     <div class="upload-text">Click to select or drag &amp; drop Excel file</div>
                     <div class="upload-hint">Only .xlsx and .xls files accepted (Max 16MB)</div>
                     <input type="file" id="fileInput" accept=".xlsx,.xls" />
@@ -527,7 +495,7 @@
             
             <!-- Stats Section -->
             <div class="section">
-                <h2>📊 Inventory Statistics</h2>
+                <h2>Inventory Statistics</h2>
                 <button class="btn-secondary" onclick="loadStats()">Load Stats</button>
                 <div class="stats" id="stats"></div>
                 <div class="message" id="statsMessage"></div>
@@ -535,7 +503,7 @@
             
             <!-- Help Section -->
             <div class="section">
-                <h2>❓ Help</h2>
+                <h2>Help</h2>
                 <div class="info-box">
                     <h3>How to use:</h3>
                     <p>
@@ -563,7 +531,7 @@
             <!-- Setup panel (first-time only) -->
             <div id="panel-setup" class="hidden">
                 <div class="section">
-                    <h2>🔧 First-Time Setup</h2>
+                    <h2>First-Time Setup</h2>
                     <div class="info-box">
                         <h3>No users found</h3>
                         <p>Create the owner account to get started. The owner can add cashiers and manage the system.</p>
@@ -589,7 +557,7 @@
             <!-- Login panel -->
             <div id="panel-login" class="hidden">
                 <div class="section">
-                    <h2>🔐 Owner Login</h2>
+                    <h2>Owner Login</h2>
                     <div class="form-card">
                         <h3>Sign in as Owner</h3>
                         <div class="form-group">
@@ -619,7 +587,7 @@
 
                 <!-- Add cashier -->
                 <div class="section">
-                    <h2>➕ Add New Cashier</h2>
+                    <h2>Add New Cashier</h2>
                     <div style="display:flex;gap:15px;flex-wrap:wrap;align-items:flex-end;">
                         <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
                             <label>Cashier Name</label>
@@ -638,7 +606,7 @@
 
                 <!-- Users list -->
                 <div class="section">
-                    <h2>👥 All Users</h2>
+                    <h2>All Users</h2>
                     <button class="btn-secondary" onclick="loadUsers()" style="margin-bottom:10px;">Refresh</button>
                     <div class="message" id="usersMessage"></div>
                     <div id="usersTableContainer"></div>
@@ -680,7 +648,7 @@
 
                 <!-- Date selector -->
                 <div class="section">
-                    <h2>📅 Daily Sales Report</h2>
+                    <h2>Daily Sales Report</h2>
                     <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Date</label>
@@ -694,7 +662,7 @@
 
                 <!-- Summary cards -->
                 <div class="section" id="rpt-summary" style="display:none;">
-                    <h2>💰 Summary</h2>
+                    <h2>Summary</h2>
                     <div class="stats" id="rptCards"></div>
 
                     <div style="margin-top:20px;">
@@ -710,7 +678,7 @@
 
                 <!-- Shifts for the day -->
                 <div class="section" id="rpt-shifts" style="display:none;">
-                    <h2>🕐 Shifts</h2>
+                    <h2>Shifts</h2>
                     <div id="rptShiftsList"></div>
                 </div>
 
@@ -744,7 +712,7 @@
 
                 <!-- Settings -->
                 <div class="section">
-                    <h2>⚙️ KRA eTIMS Settings</h2>
+                    <h2>KRA eTIMS Settings</h2>
                     <div class="info-box">
                         <h3>What is eTIMS?</h3>
                         <p>eTIMS (Electronic Tax Invoice Management System) is a KRA requirement for VAT-registered businesses to electronically submit invoices in real-time. After a sale the cashier can optionally generate a KRA-verified QR code that appears on the printed receipt.</p>
@@ -809,7 +777,7 @@
 
                 <!-- Device registration -->
                 <div class="section">
-                    <h2>📟 POS Device Registration</h2>
+                    <h2>POS Device Registration</h2>
                     <div id="etimsDeviceStatus" class="info-box">
                         <p>Save your KRA credentials first, then register this POS device with KRA to receive a Device ID.</p>
                     </div>
@@ -821,7 +789,7 @@
 
                 <!-- Invoice log -->
                 <div class="section">
-                    <h2>📋 eTIMS Invoice Log</h2>
+                    <h2>eTIMS Invoice Log</h2>
                     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
                         <select id="etimsLogFilter" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
                             <option value="">All statuses</option>
@@ -830,7 +798,7 @@
                             <option value="queued">Queued</option>
                         </select>
                         <button class="btn-secondary" onclick="loadEtimsInvoices()">Load</button>
-                        <button class="btn-primary" onclick="retryFailed()">🔄 Retry Failed / Queued</button>
+                        <button class="btn-primary" onclick="retryFailed()">Retry Failed / Queued</button>
                     </div>
                     <div id="etimsLogMsg" class="message"></div>
                     <div id="etimsInvoiceLog"></div>
@@ -1254,7 +1222,7 @@
             const methodKeys = Object.keys(methods);
             if (methodKeys.length) {
                 const pills = methodKeys.map(m =>
-                    `<span style="display:inline-block;background:#e8f0fe;color:#3949ab;border-radius:16px;padding:6px 16px;margin:4px;font-size:13px;font-weight:600;">
+                    `<span style="display:inline-block;background:#f4f4f4;color:#1a1a1a;border:1px solid #ddd;border-radius:2px;padding:5px 14px;margin:4px;font-size:13px;font-weight:600;">
                         ${escapeHtml(m.charAt(0).toUpperCase()+m.slice(1))}: ${fmtKES(methods[m])}
                     </span>`
                 ).join('');
@@ -1391,10 +1359,10 @@
                     // Device status box
                     const devEl = document.getElementById('etimsDeviceStatus');
                     if (d.deviceRegistered) {
-                        devEl.innerHTML = `<h3 style="color:#2e7d32">✅ Device Registered</h3><p>KRA Device ID: <strong>${escapeHtml(d.deviceId || '')}</strong></p>`;
-                        devEl.style.borderLeftColor = '#43a047';
+                        devEl.innerHTML = `<h3 style="color:#166534">Device Registered</h3><p>KRA Device ID: <strong>${escapeHtml(d.deviceId || '')}</strong></p>`;
+                        devEl.style.borderLeftColor = '#16a34a';
                     } else {
-                        devEl.innerHTML = '<h3>⚠️ Device not yet registered</h3><p>Save credentials first, then click "Register Device with KRA".</p>';
+                        devEl.innerHTML = '<h3>Device not yet registered</h3><p>Save credentials first, then click "Register Device with KRA".</p>';
                         devEl.style.borderLeftColor = '#667eea';
                     }
                 }
