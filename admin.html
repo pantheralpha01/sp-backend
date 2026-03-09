@@ -486,6 +486,7 @@
             <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
             <button class="tab-btn" onclick="switchTab('users')">👤 Users &amp; Cashiers</button>
             <button class="tab-btn" onclick="switchTab('reports')">📊 Sales Reports</button>
+            <button class="tab-btn" onclick="switchTab('etims')">🧾 eTIMS / KRA</button>
         </div>
         
         <!-- ====== PRODUCTS TAB ====== -->
@@ -715,13 +716,136 @@
 
             </div><!-- end rpt-panel -->
         </div><!-- end tab-reports -->
+
+        <!-- ====== eTIMS / KRA TAB ====== -->
+        <div class="tab-panel" id="tab-etims">
+
+            <!-- Auth gate -->
+            <div id="etims-gate" class="hidden">
+                <div class="section">
+                    <div class="info-box">
+                        <h3>🔐 Login required</h3>
+                        <p>Please go to the <strong>Users &amp; Cashiers</strong> tab and log in as Owner first, then come back here.</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="switchTab('users');initUsersTab();">Go to Login</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- eTIMS panel (authenticated) -->
+            <div id="etims-panel" class="hidden">
+
+                <!-- Auth bar -->
+                <div class="user-auth-bar">
+                    <div>Logged in as <span id="etimsAuthName"></span> (Owner)</div>
+                    <button class="btn-secondary" style="padding:6px 16px;font-size:13px;" onclick="doLogout();switchTab('users');">Logout</button>
+                </div>
+
+                <!-- Settings -->
+                <div class="section">
+                    <h2>⚙️ KRA eTIMS Settings</h2>
+                    <div class="info-box">
+                        <h3>What is eTIMS?</h3>
+                        <p>eTIMS (Electronic Tax Invoice Management System) is a KRA requirement for VAT-registered businesses to electronically submit invoices in real-time. After a sale the cashier can optionally generate a KRA-verified QR code that appears on the printed receipt.</p>
+                    </div>
+                    <div id="etimsMsg" class="message"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;">
+                        <div class="form-group">
+                            <label>KRA PIN</label>
+                            <input type="text" id="etimsKraPin" placeholder="e.g. P051234567X" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Business Name (as registered with KRA)</label>
+                            <input type="text" id="etimsBusinessName" placeholder="ABC Traders Ltd" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Branch ID</label>
+                            <input type="text" id="etimsBranchId" placeholder="001" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Device Serial No.</label>
+                            <input type="text" id="etimsDeviceSerial" placeholder="POS-001" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>eTIMS Client ID (from KRA)</label>
+                            <input type="text" id="etimsClientId" placeholder="Provided by KRA after approval" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>eTIMS Client Secret</label>
+                            <input type="password" id="etimsClientSecret" placeholder="Leave blank to keep current" autocomplete="new-password" />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:4px;">
+                        <label>Environment</label>
+                        <div style="display:flex;gap:20px;margin-top:8px;">
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;">
+                                <input type="radio" name="etimsEnv" value="sandbox" checked /> Sandbox (testing)
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;">
+                                <input type="radio" name="etimsEnv" value="production" /> Production
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>eTIMS Mode</label>
+                        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:8px;">
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;">
+                                <input type="radio" name="etimsMode" value="disabled" checked /> Disabled
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;">
+                                <input type="radio" name="etimsMode" value="optional" /> Optional (cashier can skip)
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;">
+                                <input type="radio" name="etimsMode" value="strict" /> Strict (must succeed before print)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="saveEtimsSettings()">💾 Save Settings</button>
+                        <button class="btn-secondary" onclick="loadEtimsSettings()">↺ Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Device registration -->
+                <div class="section">
+                    <h2>📟 POS Device Registration</h2>
+                    <div id="etimsDeviceStatus" class="info-box">
+                        <p>Save your KRA credentials first, then register this POS device with KRA to receive a Device ID.</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="registerDevice()">Register Device with KRA</button>
+                    </div>
+                    <div id="etimsDeviceMsg" class="message"></div>
+                </div>
+
+                <!-- Invoice log -->
+                <div class="section">
+                    <h2>📋 eTIMS Invoice Log</h2>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
+                        <select id="etimsLogFilter" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
+                            <option value="">All statuses</option>
+                            <option value="approved">Approved</option>
+                            <option value="failed">Failed</option>
+                            <option value="queued">Queued</option>
+                        </select>
+                        <button class="btn-secondary" onclick="loadEtimsInvoices()">Load</button>
+                        <button class="btn-primary" onclick="retryFailed()">🔄 Retry Failed / Queued</button>
+                    </div>
+                    <div id="etimsLogMsg" class="message"></div>
+                    <div id="etimsInvoiceLog"></div>
+                </div>
+
+            </div><!-- end etims-panel -->
+        </div><!-- end tab-etims -->
+
     </div>
     
     <script>
         // ===================== TAB SWITCHING =====================
         function switchTab(name) {
             document.querySelectorAll('.tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', ['products','users','reports'][i] === name);
+                b.classList.toggle('active', ['products','users','reports','etims'][i] === name);
             });
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('tab-' + name).classList.add('active');
@@ -1063,6 +1187,11 @@
             initReportsTab();
         });
 
+        // Initialize eTIMS tab when clicked
+        document.querySelectorAll('.tab-btn')[3].addEventListener('click', () => {
+            initEtimsTab();
+        });
+
         // ===================== SALES REPORTS =====================
         function initReportsTab() {
             const today = new Date().toISOString().split('T')[0];
@@ -1219,6 +1348,189 @@
 
         // Load stats on page load
         window.addEventListener('load', loadStats);
+
+        // ===================== eTIMS / KRA =====================
+        function initEtimsTab() {
+            if (!authToken) {
+                document.getElementById('etims-gate').classList.remove('hidden');
+                document.getElementById('etims-panel').classList.add('hidden');
+            } else {
+                document.getElementById('etims-gate').classList.add('hidden');
+                document.getElementById('etims-panel').classList.remove('hidden');
+                document.getElementById('etimsAuthName').textContent = currentUserName;
+                loadEtimsSettings();
+            }
+        }
+
+        function showEtimsMsg(text, type) {
+            const el = document.getElementById('etimsMsg');
+            el.textContent = text;
+            el.className = 'message show ' + type;
+        }
+        function hideEtimsMsg() { document.getElementById('etimsMsg').className = 'message'; }
+
+        async function loadEtimsSettings() {
+            hideEtimsMsg();
+            try {
+                const res = await fetch(`${window.location.origin}/api/owner/etims/settings`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                if (res.status === 401 || res.status === 403) { authToken = null; initEtimsTab(); return; }
+                const data = await res.json();
+                if (res.ok && data.data) {
+                    const d = data.data;
+                    document.getElementById('etimsKraPin').value = d.kraPin || '';
+                    document.getElementById('etimsBusinessName').value = d.businessName || '';
+                    document.getElementById('etimsBranchId').value = d.branchId || '001';
+                    document.getElementById('etimsDeviceSerial').value = d.deviceSerial || 'POS-001';
+                    document.getElementById('etimsClientId').value = d.hasCredentials ? '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022' : '';
+                    const envEl = document.querySelector(`input[name="etimsEnv"][value="${d.environment || 'sandbox'}"]`);
+                    if (envEl) envEl.checked = true;
+                    const modeEl = document.querySelector(`input[name="etimsMode"][value="${d.mode || 'disabled'}"]`);
+                    if (modeEl) modeEl.checked = true;
+                    // Device status box
+                    const devEl = document.getElementById('etimsDeviceStatus');
+                    if (d.deviceRegistered) {
+                        devEl.innerHTML = `<h3 style="color:#2e7d32">✅ Device Registered</h3><p>KRA Device ID: <strong>${escapeHtml(d.deviceId || '')}</strong></p>`;
+                        devEl.style.borderLeftColor = '#43a047';
+                    } else {
+                        devEl.innerHTML = '<h3>⚠️ Device not yet registered</h3><p>Save credentials first, then click "Register Device with KRA".</p>';
+                        devEl.style.borderLeftColor = '#667eea';
+                    }
+                }
+            } catch (e) {
+                showEtimsMsg('Error loading settings: ' + e.message, 'error');
+            }
+        }
+
+        async function saveEtimsSettings() {
+            hideEtimsMsg();
+            const clientId = document.getElementById('etimsClientId').value.trim();
+            const clientSecret = document.getElementById('etimsClientSecret').value.trim();
+            const payload = {
+                kraPin: document.getElementById('etimsKraPin').value.trim(),
+                businessName: document.getElementById('etimsBusinessName').value.trim(),
+                branchId: document.getElementById('etimsBranchId').value.trim(),
+                deviceSerial: document.getElementById('etimsDeviceSerial').value.trim(),
+                environment: document.querySelector('input[name="etimsEnv"]:checked').value,
+                mode: document.querySelector('input[name="etimsMode"]:checked').value,
+            };
+            // Only send credentials if the user typed new values (not the masked dots)
+            if (clientId && !clientId.startsWith('\u2022')) payload.clientId = clientId;
+            if (clientSecret) payload.clientSecret = clientSecret;
+            try {
+                const res = await fetch(`${window.location.origin}/api/owner/etims/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showEtimsMsg('Settings saved successfully.', 'success');
+                    document.getElementById('etimsClientSecret').value = '';
+                    loadEtimsSettings();
+                } else {
+                    showEtimsMsg(data.message || 'Save failed.', 'error');
+                }
+            } catch (e) {
+                showEtimsMsg('Network error: ' + e.message, 'error');
+            }
+        }
+
+        async function registerDevice() {
+            const msgEl = document.getElementById('etimsDeviceMsg');
+            msgEl.textContent = 'Registering device with KRA\u2026';
+            msgEl.className = 'message show info';
+            try {
+                const res = await fetch(`${window.location.origin}/api/owner/etims/devices/register`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    msgEl.textContent = 'Device registered! KRA Device ID: ' + (data.data?.deviceId || 'assigned');
+                    msgEl.className = 'message show success';
+                    loadEtimsSettings();
+                } else {
+                    msgEl.textContent = data.message || 'Registration failed.';
+                    msgEl.className = 'message show error';
+                }
+            } catch (e) {
+                msgEl.textContent = 'Network error: ' + e.message;
+                msgEl.className = 'message show error';
+            }
+        }
+
+        async function loadEtimsInvoices() {
+            const status = document.getElementById('etimsLogFilter').value;
+            const url = status
+                ? `${window.location.origin}/api/owner/etims/invoices?status=${status}`
+                : `${window.location.origin}/api/owner/etims/invoices`;
+            const logEl = document.getElementById('etimsInvoiceLog');
+            logEl.innerHTML = '<p style="color:#999;font-size:13px;">Loading\u2026</p>';
+            try {
+                const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + authToken } });
+                const data = await res.json();
+                if (res.ok && data.data) {
+                    renderEtimsLog(data.data);
+                } else {
+                    logEl.innerHTML = '<p style="color:#e53935;font-size:13px;">' + escapeHtml(data.message || 'Failed to load.') + '</p>';
+                }
+            } catch (e) {
+                logEl.innerHTML = '<p style="color:#e53935;font-size:13px;">Network error: ' + escapeHtml(e.message) + '</p>';
+            }
+        }
+
+        function renderEtimsLog(logs) {
+            const logEl = document.getElementById('etimsInvoiceLog');
+            if (!logs.length) {
+                logEl.innerHTML = '<p style="color:#999;font-size:13px;">No invoice log entries found.</p>';
+                return;
+            }
+            const statusColors = { approved: '#2e7d32', failed: '#c62828', queued: '#e65100', submitted: '#1565c0' };
+            const rows = logs.map(l => {
+                const color = statusColors[l.etimsStatus] || '#555';
+                const errText = (l.errorMessage || '').substring(0, 80);
+                return `<tr>
+                    <td style="font-size:12px">${escapeHtml(l.receiptNumber)}</td>
+                    <td><span class="badge" style="background:${color}20;color:${color}">${escapeHtml(l.etimsStatus)}</span></td>
+                    <td style="font-size:12px">${escapeHtml(l.etimsInvoiceNumber || '\u2014')}</td>
+                    <td style="font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(l.errorMessage || '')}">${escapeHtml(errText || '\u2014')}</td>
+                    <td style="text-align:center">${l.retries}</td>
+                    <td style="font-size:11px">${l.createdAt ? new Date(l.createdAt).toLocaleString() : '\u2014'}</td>
+                </tr>`;
+            }).join('');
+            logEl.innerHTML = `
+                <table class="users-table">
+                    <thead><tr><th>Receipt #</th><th>Status</th><th>KRA Invoice No.</th><th>Error</th><th style="text-align:center">Retries</th><th>Submitted</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        async function retryFailed() {
+            const logMsg = document.getElementById('etimsLogMsg');
+            logMsg.textContent = 'Retrying failed/queued invoices with KRA\u2026';
+            logMsg.className = 'message show info';
+            try {
+                const res = await fetch(`${window.location.origin}/api/owner/etims/invoices/retry`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    const errStr = data.errors && data.errors.length ? ' | Errors: ' + data.errors.slice(0, 3).join('; ') : '';
+                    logMsg.textContent = `Retried: ${data.retried}  |  Approved: ${data.approved}${errStr}`;
+                    logMsg.className = 'message show ' + (data.approved > 0 ? 'success' : 'info');
+                    loadEtimsInvoices();
+                } else {
+                    logMsg.textContent = data.message || 'Retry failed.';
+                    logMsg.className = 'message show error';
+                }
+            } catch (e) {
+                logMsg.textContent = 'Network error: ' + e.message;
+                logMsg.className = 'message show error';
+            }
+        }
     </script>
 </body>
 </html>

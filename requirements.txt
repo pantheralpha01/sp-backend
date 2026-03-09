@@ -7,3 +7,5 @@ openpyxl==3.1.5
 python-dotenv==1.0.0
 gunicorn==22.0.0
 pg8000==1.31.2
+cryptography>=42.0.0
+requests>=2.31.0

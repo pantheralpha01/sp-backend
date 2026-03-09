@@ -250,3 +250,73 @@ class Expense(db.Model):
 
     def __repr__(self):
         return f'<Expense {self.category} {self.amount}>'
+
+
+class EtimsConfig(db.Model):
+    """eTIMS / KRA configuration  — single row per installation."""
+    __tablename__ = 'etims_config'
+
+    id = db.Column(db.Integer, primary_key=True)
+    kra_pin = db.Column(db.String(50), default='')
+    business_name = db.Column(db.String(200), default='')
+    branch_id = db.Column(db.String(20), default='001')
+    device_serial = db.Column(db.String(100), default='POS-001')
+    device_id = db.Column(db.String(100), default='')       # returned by KRA
+    device_registered = db.Column(db.Boolean, default=False)
+    environment = db.Column(db.String(20), default='sandbox')   # sandbox | production
+    mode = db.Column(db.String(20), default='disabled')          # disabled | optional | strict
+    client_id_encrypted = db.Column(db.Text, default='')         # AES-Fernet encrypted
+    client_secret_encrypted = db.Column(db.Text, default='')     # AES-Fernet encrypted
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'kraPin': self.kra_pin,
+            'businessName': self.business_name,
+            'branchId': self.branch_id,
+            'deviceSerial': self.device_serial,
+            'deviceId': self.device_id,
+            'deviceRegistered': self.device_registered,
+            'environment': self.environment,
+            'mode': self.mode,
+            'hasCredentials': bool(self.client_id_encrypted),
+            'updatedAt': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+    def __repr__(self):
+        return f'<EtimsConfig env={self.environment} mode={self.mode}>'
+
+
+class EtimsInvoiceLog(db.Model):
+    """Tracks every eTIMS invoice submission attempt."""
+    __tablename__ = 'etims_invoice_log'
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    transaction_id = db.Column(db.String(36), nullable=False, index=True)
+    receipt_number = db.Column(db.String(50), nullable=False)
+    etims_status = db.Column(db.String(20), default='queued')   # queued | submitted | approved | failed
+    etims_invoice_number = db.Column(db.String(100), default='')  # KRA-assigned invoice number
+    qr_data = db.Column(db.Text, default='')                      # base64-encoded QR image from KRA
+    signature = db.Column(db.String(500), default='')
+    error_message = db.Column(db.Text, default='')
+    retries = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'transactionId': self.transaction_id,
+            'receiptNumber': self.receipt_number,
+            'etimsStatus': self.etims_status,
+            'etimsInvoiceNumber': self.etims_invoice_number,
+            'qrData': self.qr_data,
+            'signature': self.signature,
+            'errorMessage': self.error_message,
+            'retries': self.retries,
+            'createdAt': self.created_at.isoformat(),
+            'updatedAt': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+    def __repr__(self):
+        return f'<EtimsInvoiceLog {self.receipt_number} ({self.etims_status})>'

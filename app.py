@@ -10,6 +10,7 @@ from shift_routes import shifts_bp
 from transaction_routes import transactions_bp
 from expense_routes import expenses_bp
 from report_routes import reports_bp
+from etims_routes import etims_bp
 
 def create_app(env='development'):
     """Create and configure Flask application"""
@@ -38,6 +39,7 @@ def create_app(env='development'):
     app.register_blueprint(transactions_bp)
     app.register_blueprint(expenses_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(etims_bp)
 
     # Serve admin dashboard
     @app.route('/', methods=['GET'])
@@ -92,6 +94,13 @@ if __name__ == '__main__':
     print("  GET  /api/reports/daily")
     print("  GET  /api/reports/range")
     print("  GET  /api/reports/cashier/<id>")
+    print("\neTIMS / KRA:")
+    print("  GET  /api/owner/etims/settings")
+    print("  POST /api/owner/etims/settings")
+    print("  POST /api/owner/etims/devices/register")
+    print("  POST /api/etims/invoices/submit")
+    print("  GET  /api/owner/etims/invoices")
+    print("  POST /api/owner/etims/invoices/retry")
     print("\nPress Ctrl+C to stop the server\n")
 
     app.run(
